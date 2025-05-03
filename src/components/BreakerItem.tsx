@@ -36,7 +36,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       </div>
       <div className="flex-1">
         <h3 className="text-white font-medium truncate">{breaker.name || `Breaker ${breaker.position}`}</h3>
-        <p className="text-sm text-gray-400">{breaker.wattage > 0 ? `${breaker.wattage}W` : 'No wattage set'}</p>
+        <p className="text-sm text-gray-400">{breaker.amperage > 0 ? `${breaker.amperage}A` : 'No amperage set'}</p>
       </div>
     </div>
   );

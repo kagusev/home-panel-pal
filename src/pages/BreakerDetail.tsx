@@ -14,7 +14,7 @@ const BreakerDetail = () => {
   const navigate = useNavigate();
   const [breaker, setBreaker] = useState<Breaker | null>(null);
   const [name, setName] = useState('');
-  const [wattage, setWattage] = useState(0);
+  const [amperage, setAmperage] = useState(0);
   const [isOn, setIsOn] = useState(true);
   
   useEffect(() => {
@@ -39,7 +39,7 @@ const BreakerDetail = () => {
     
     setBreaker(foundBreaker);
     setName(foundBreaker.name);
-    setWattage(foundBreaker.wattage);
+    setAmperage(foundBreaker.amperage);
     setIsOn(foundBreaker.isOn);
   }, [id, navigate]);
   
@@ -51,7 +51,7 @@ const BreakerDetail = () => {
     const updatedBreaker: Breaker = {
       ...breaker,
       name,
-      wattage,
+      amperage,
       isOn
     };
     
@@ -101,12 +101,12 @@ const BreakerDetail = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="breaker-wattage">Wattage</Label>
+              <Label htmlFor="breaker-amperage">Amperage</Label>
               <Input
-                id="breaker-wattage"
+                id="breaker-amperage"
                 type="number"
-                value={wattage}
-                onChange={(e) => setWattage(parseInt(e.target.value) || 0)}
+                value={amperage}
+                onChange={(e) => setAmperage(parseInt(e.target.value) || 0)}
                 min="0"
               />
             </div>

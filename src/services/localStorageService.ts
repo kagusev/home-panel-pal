@@ -8,7 +8,7 @@ export interface PanelSettings {
 export interface Breaker {
   id: number;
   name: string;
-  wattage: number;
+  amperage: number;
   isOn: boolean;
   position: number;
 }
@@ -69,7 +69,7 @@ export const initializeBreakers = (count: number): void => {
   const newBreakers: Breaker[] = Array.from({ length: count }, (_, index) => ({
     id: index + 1,
     name: `Breaker ${index + 1}`,
-    wattage: 0,
+    amperage: 0,
     isOn: true,
     position: index + 1,
   }));
