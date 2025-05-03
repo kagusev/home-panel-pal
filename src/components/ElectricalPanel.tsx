@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import BreakerItem from './BreakerItem';
 import { getBreakers, getPanelSettings, toggleBreakerState, Breaker } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ElectricalPanel = () => {
   const [breakers, setBreakers] = useState<Breaker[]>([]);
@@ -51,19 +52,19 @@ const ElectricalPanel = () => {
   };
   
   return (
-    <div className="container max-w-md mx-auto p-4">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-2">Electrical Panel</h1>
-        <div className="text-sm text-gray-400">
+    <div className="container mx-auto p-2 max-h-screen flex flex-col">
+      <header className="mb-3">
+        <h1 className="text-xl font-bold text-white mb-1">Electrical Panel</h1>
+        <div className="text-xs text-gray-400">
           <p>Service Rating: {panelSettings.serviceRating} Amps</p>
           <p>Total Breakers: {panelSettings.breakerCount}</p>
         </div>
       </header>
       
-      <div className="bg-panel-background border border-panel-border rounded-lg p-4 shadow-lg">
-        <div className="flex">
+      <div className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1 overflow-visible">
+        <div className="flex gap-2 h-full">
           {/* Left Column */}
-          <div className="flex-1 space-y-2 mr-2">
+          <div className="flex-1 space-y-1">
             {getColumnBreakers('left').map((breaker) => (
               <BreakerItem
                 key={breaker.id}
@@ -74,7 +75,7 @@ const ElectricalPanel = () => {
           </div>
           
           {/* Right Column */}
-          <div className="flex-1 space-y-2 ml-2">
+          <div className="flex-1 space-y-1">
             {getColumnBreakers('right').map((breaker) => (
               <BreakerItem
                 key={breaker.id}
