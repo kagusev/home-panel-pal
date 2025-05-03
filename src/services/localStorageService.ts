@@ -1,0 +1,89 @@
+
+// Types
+export interface PanelSettings {
+  serviceRating: number;
+  breakerCount: number;
+}
+
+export interface Breaker {
+  id: number;
+  name: string;
+  wattage: number;
+  isOn: boolean;
+  position: number;
+}
+
+// Keys for localStorage
+const PANEL_SETTINGS_KEY = 'panel_settings';
+const BREAKERS_KEY = 'panel_breakers';
+
+// Panel Settings functions
+export const savePanelSettings = (settings: PanelSettings): void => {
+  localStorage.setItem(PANEL_SETTINGS_KEY, JSON.stringify(settings));
+};
+
+export const getPanelSettings = (): PanelSettings | null => {
+  const settings = localStorage.getItem(PANEL_SETTINGS_KEY);
+  if (!settings) return null;
+  return JSON.parse(settings);
+};
+
+// Breaker functions
+export const saveBreakers = (breakers: Breaker[]): void => {
+  localStorage.setItem(BREAKERS_KEY, JSON.stringify(breakers));
+};
+
+export const getBreakers = (): Breaker[] => {
+  const breakers = localStorage.getItem(BREAKERS_KEY);
+  if (!breakers) return [];
+  return JSON.parse(breakers);
+};
+
+export const updateBreaker = (updatedBreaker: Breaker): void => {
+  const breakers = getBreakers();
+  const index = breakers.findIndex(breaker => breaker.id === updatedBreaker.id);
+  
+  if (index !== -1) {
+    breakers[index] = updatedBreaker;
+    saveBreakers(breakers);
+  }
+};
+
+export const toggleBreakerState = (id: number): void => {
+  const breakers = getBreakers();
+  const index = breakers.findIndex(breaker => breaker.id === id);
+  
+  if (index !== -1) {
+    breakers[index].isOn = !breakers[index].isOn;
+    saveBreakers(breakers);
+  }
+};
+
+// Initialize breakers based on panel settings
+export const initializeBreakers = (count: number): void => {
+  const existingBreakers = getBreakers();
+  
+  // If we already have breakers, don't reinitialize
+  if (existingBreakers.length > 0) return;
+  
+  const newBreakers: Breaker[] = Array.from({ length: count }, (_, index) => ({
+    id: index + 1,
+    name: `Breaker ${index + 1}`,
+    wattage: 0,
+    isOn: true,
+    position: index + 1,
+  }));
+  
+  saveBreakers(newBreakers);
+};
+
+// Clear all data
+export const clearAllData = (): void => {
+  localStorage.removeItem(PANEL_SETTINGS_KEY);
+  localStorage.removeItem(BREAKERS_KEY);
+};
+
+// Check if initial setup is complete
+export const isSetupComplete = (): boolean => {
+  return getPanelSettings() !== null && getBreakers().length > 0;
+};
