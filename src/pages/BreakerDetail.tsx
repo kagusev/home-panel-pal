@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getBreakers, updateBreaker, Breaker } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 import { ArrowLeft } from 'lucide-react';
@@ -102,13 +103,21 @@ const BreakerDetail = () => {
             
             <div className="space-y-2">
               <Label htmlFor="breaker-amperage">Amperage</Label>
-              <Input
-                id="breaker-amperage"
-                type="number"
-                value={amperage}
-                onChange={(e) => setAmperage(parseInt(e.target.value) || 0)}
-                min="0"
-              />
+              <Select 
+                value={amperage.toString()} 
+                onValueChange={(value) => setAmperage(parseInt(value))}
+              >
+                <SelectTrigger id="breaker-amperage" className="w-full">
+                  <SelectValue placeholder="Select amperage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15">15A</SelectItem>
+                  <SelectItem value="20">20A</SelectItem>
+                  <SelectItem value="30">30A</SelectItem>
+                  <SelectItem value="40">40A</SelectItem>
+                  <SelectItem value="50">50A</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="flex items-center space-x-2">
