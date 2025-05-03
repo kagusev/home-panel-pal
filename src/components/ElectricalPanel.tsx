@@ -40,6 +40,15 @@ const ElectricalPanel = () => {
       description: `${breaker?.name || `Breaker ${id}`} is now ${newState ? 'on' : 'off'}.`,
     });
   };
+
+  // Function to split breakers into left and right columns (odd and even positions)
+  const getColumnBreakers = (column: 'left' | 'right') => {
+    return breakers.filter(breaker => 
+      column === 'left' 
+        ? breaker.position % 2 !== 0 // Left column: odd positions (1, 3, 5, ...)
+        : breaker.position % 2 === 0 // Right column: even positions (2, 4, 6, ...)
+    );
+  };
   
   return (
     <div className="container max-w-md mx-auto p-4">
@@ -52,14 +61,28 @@ const ElectricalPanel = () => {
       </header>
       
       <div className="bg-panel-background border border-panel-border rounded-lg p-4 shadow-lg">
-        <div className="space-y-2">
-          {breakers.map((breaker) => (
-            <BreakerItem
-              key={breaker.id}
-              breaker={breaker}
-              onToggle={handleToggleBreaker}
-            />
-          ))}
+        <div className="flex">
+          {/* Left Column */}
+          <div className="flex-1 space-y-2 mr-2">
+            {getColumnBreakers('left').map((breaker) => (
+              <BreakerItem
+                key={breaker.id}
+                breaker={breaker}
+                onToggle={handleToggleBreaker}
+              />
+            ))}
+          </div>
+          
+          {/* Right Column */}
+          <div className="flex-1 space-y-2 ml-2">
+            {getColumnBreakers('right').map((breaker) => (
+              <BreakerItem
+                key={breaker.id}
+                breaker={breaker}
+                onToggle={handleToggleBreaker}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
