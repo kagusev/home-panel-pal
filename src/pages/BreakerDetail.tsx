@@ -10,13 +10,19 @@ import { getBreakers, updateBreaker, Breaker } from '@/services/localStorageServ
 import { toast } from "@/components/ui/use-toast";
 import { ArrowLeft } from 'lucide-react';
 
+// Update the Breaker interface in this file
+interface ExtendedBreaker extends Breaker {
+  interruptionType?: string;
+}
+
 const BreakerDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [breaker, setBreaker] = useState<Breaker | null>(null);
+  const [breaker, setBreaker] = useState<ExtendedBreaker | null>(null);
   const [name, setName] = useState('');
   const [amperage, setAmperage] = useState(0);
   const [isOn, setIsOn] = useState(true);
+  const [interruptionType, setInterruptionType] = useState('Standard Trip');
   
   useEffect(() => {
     if (!id) {
@@ -42,6 +48,7 @@ const BreakerDetail = () => {
     setName(foundBreaker.name);
     setAmperage(foundBreaker.amperage);
     setIsOn(foundBreaker.isOn);
+    setInterruptionType(foundBreaker.interruptionType || 'Standard Trip');
   }, [id, navigate]);
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,11 +56,12 @@ const BreakerDetail = () => {
     
     if (!breaker) return;
     
-    const updatedBreaker: Breaker = {
+    const updatedBreaker: ExtendedBreaker = {
       ...breaker,
       name,
       amperage,
-      isOn
+      isOn,
+      interruptionType
     };
     
     updateBreaker(updatedBreaker);
@@ -116,6 +124,24 @@ const BreakerDetail = () => {
                   <SelectItem value="30">30A</SelectItem>
                   <SelectItem value="40">40A</SelectItem>
                   <SelectItem value="50">50A</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="breaker-interruption-type">Interruption Type</Label>
+              <Select 
+                value={interruptionType} 
+                onValueChange={(value) => setInterruptionType(value)}
+              >
+                <SelectTrigger id="breaker-interruption-type" className="w-full">
+                  <SelectValue placeholder="Select interruption type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Standard Trip">Standard Trip</SelectItem>
+                  <SelectItem value="GFCI">GFCI</SelectItem>
+                  <SelectItem value="AFCI">AFCI</SelectItem>
+                  <SelectItem value="AFCI/GFCI">AFCI/GFCI</SelectItem>
                 </SelectContent>
               </Select>
             </div>

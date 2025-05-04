@@ -11,6 +11,7 @@ export interface Breaker {
   amperage: number;
   isOn: boolean;
   position: number;
+  interruptionType?: string;
 }
 
 // Keys for localStorage
@@ -72,6 +73,7 @@ export const initializeBreakers = (count: number): void => {
     amperage: 0,
     isOn: true,
     position: index + 1,
+    interruptionType: 'Standard Trip'
   }));
   
   saveBreakers(newBreakers);
