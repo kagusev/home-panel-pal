@@ -92,7 +92,7 @@ const BreakerDetail = () => {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="breaker-name">Breaker Name</Label>
+              <Label htmlFor="breaker-name">Name</Label>
               <Input
                 id="breaker-name"
                 value={name}
