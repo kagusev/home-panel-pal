@@ -13,6 +13,7 @@ import { ArrowLeft } from 'lucide-react';
 // Update the Breaker interface in this file
 interface ExtendedBreaker extends Breaker {
   interruptionType?: string;
+  breakerType?: string;
 }
 
 const BreakerDetail = () => {
@@ -23,6 +24,7 @@ const BreakerDetail = () => {
   const [amperage, setAmperage] = useState(0);
   const [isOn, setIsOn] = useState(true);
   const [interruptionType, setInterruptionType] = useState('Standard Trip');
+  const [breakerType, setBreakerType] = useState('Single Pole');
   
   useEffect(() => {
     if (!id) {
@@ -49,6 +51,7 @@ const BreakerDetail = () => {
     setAmperage(foundBreaker.amperage);
     setIsOn(foundBreaker.isOn);
     setInterruptionType(foundBreaker.interruptionType || 'Standard Trip');
+    setBreakerType(foundBreaker.breakerType || 'Single Pole');
   }, [id, navigate]);
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -61,7 +64,8 @@ const BreakerDetail = () => {
       name,
       amperage,
       isOn,
-      interruptionType
+      interruptionType,
+      breakerType
     };
     
     updateBreaker(updatedBreaker);
@@ -107,6 +111,23 @@ const BreakerDetail = () => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Kitchen Lights"
               />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="breaker-type">Breaker Type</Label>
+              <Select 
+                value={breakerType} 
+                onValueChange={(value) => setBreakerType(value)}
+              >
+                <SelectTrigger id="breaker-type" className="w-full">
+                  <SelectValue placeholder="Select breaker type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Single Pole">Single Pole</SelectItem>
+                  <SelectItem value="Double Pole">Double Pole</SelectItem>
+                  <SelectItem value="Triple Pole">Triple Pole</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="space-y-2">

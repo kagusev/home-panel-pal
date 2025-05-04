@@ -3,6 +3,7 @@
 export interface PanelSettings {
   serviceRating: number;
   breakerCount: number;
+  spaces?: number;
 }
 
 export interface Breaker {
@@ -12,6 +13,7 @@ export interface Breaker {
   isOn: boolean;
   position: number;
   interruptionType?: string;
+  breakerType?: string;
 }
 
 // Keys for localStorage
@@ -73,7 +75,8 @@ export const initializeBreakers = (count: number): void => {
     amperage: 0,
     isOn: true,
     position: index + 1,
-    interruptionType: 'Standard Trip'
+    interruptionType: 'Standard Trip',
+    breakerType: 'Single Pole'
   }));
   
   saveBreakers(newBreakers);
