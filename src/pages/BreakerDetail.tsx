@@ -104,7 +104,7 @@ const BreakerDetail = () => {
             <div className="space-y-2">
               <Label htmlFor="breaker-amperage">Amperage</Label>
               <Select 
-                value={amperage.toString()} 
+                value={amperage ? amperage.toString() : "0"} 
                 onValueChange={(value) => setAmperage(parseInt(value))}
               >
                 <SelectTrigger id="breaker-amperage" className="w-full">
