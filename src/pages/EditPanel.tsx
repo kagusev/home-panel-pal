@@ -73,7 +73,7 @@ const EditPanel = () => {
       toast({
         variant: "destructive",
         title: "Insufficient spaces",
-        description: "The current number of breakers exceeds the selected spaces. Please remove some breakers first or increase the number of spaces."
+        description: "The current number of breakers exceeds the panel's capacity. Please reduce number of breakers"
       });
       return;
     }
