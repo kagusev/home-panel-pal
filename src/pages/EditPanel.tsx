@@ -60,11 +60,20 @@ const EditPanel = () => {
     const existingBreakers = getBreakers();
     const currentBreakerCount = existingBreakers.length;
     
-    if (currentBreakerCount > spaces) {
+    if (breakerCount > spaces) {
       toast({
         variant: "destructive",
         title: "Too many breakers",
-        description: "The number of spaces cannot be less than your current breaker count. Please remove some breakers first or increase the number of spaces."
+        description: "The number of breakers cannot exceed the number of spaces."
+      });
+      return;
+    }
+    
+    if (currentBreakerCount > spaces) {
+      toast({
+        variant: "destructive",
+        title: "Insufficient spaces",
+        description: "The current number of breakers exceeds the selected spaces. Please remove some breakers first or increase the number of spaces."
       });
       return;
     }
@@ -74,7 +83,7 @@ const EditPanel = () => {
     
     toast({
       title: "Panel Updated",
-      description: "Your electrical panel settings have been updated."
+      description: `Your electrical panel now has ${spaces} spaces with ${breakerCount} breakers.`
     });
     
     navigate('/');
@@ -134,6 +143,7 @@ const EditPanel = () => {
                     <SelectItem value="54">54</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-gray-400">Panel spaces must be an even number</p>
               </div>
               
               <div className="space-y-2">

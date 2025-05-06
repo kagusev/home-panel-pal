@@ -63,6 +63,22 @@ const ElectricalPanel = () => {
       ? breakers.slice(0, halfLength) // First half
       : breakers.slice(halfLength);   // Second half
   };
+
+  // Calculate panel height based on number of spaces
+  const getPanelHeight = () => {
+    // Each space typically takes about 48px height (including margins)
+    // We divide by 2 since we have two columns
+    const baseHeight = 100; // Base padding and header space
+    const spacesPerColumn = Math.ceil(panelSettings.spaces / 2);
+    const spaceHeight = 48; // Height per space in pixels
+    
+    return baseHeight + (spacesPerColumn * spaceHeight);
+  };
+  
+  const panelStyle = {
+    minHeight: `${getPanelHeight()}px`,
+    maxHeight: `${getPanelHeight()}px`,
+  };
   
   return (
     <div className="container mx-auto p-2 max-h-screen flex flex-col">
@@ -83,30 +99,35 @@ const ElectricalPanel = () => {
         </div>
       </header>
       
-      <div className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1 overflow-visible">
-        <div className="flex gap-2 h-full">
-          {/* Left Column */}
-          <div className="flex-1 space-y-1">
-            {getColumnBreakers('left').map((breaker) => (
-              <BreakerItem
-                key={breaker.id}
-                breaker={breaker}
-                onToggle={handleToggleBreaker}
-              />
-            ))}
+      <div 
+        className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1 overflow-auto"
+        style={panelStyle}
+      >
+        <ScrollArea className="h-full">
+          <div className="flex gap-2 h-full">
+            {/* Left Column */}
+            <div className="flex-1 space-y-1">
+              {getColumnBreakers('left').map((breaker) => (
+                <BreakerItem
+                  key={breaker.id}
+                  breaker={breaker}
+                  onToggle={handleToggleBreaker}
+                />
+              ))}
+            </div>
+            
+            {/* Right Column */}
+            <div className="flex-1 space-y-1">
+              {getColumnBreakers('right').map((breaker) => (
+                <BreakerItem
+                  key={breaker.id}
+                  breaker={breaker}
+                  onToggle={handleToggleBreaker}
+                />
+              ))}
+            </div>
           </div>
-          
-          {/* Right Column */}
-          <div className="flex-1 space-y-1">
-            {getColumnBreakers('right').map((breaker) => (
-              <BreakerItem
-                key={breaker.id}
-                breaker={breaker}
-                onToggle={handleToggleBreaker}
-              />
-            ))}
-          </div>
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );

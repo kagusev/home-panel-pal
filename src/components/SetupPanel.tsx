@@ -65,7 +65,7 @@ const SetupPanel = ({ onComplete }: SetupPanelProps) => {
     // Notify the parent component that setup is complete
     toast({
       title: "Setup Complete",
-      description: "Your electrical panel has been configured."
+      description: `Your electrical panel with ${spaces} spaces has been configured.`
     });
     
     onComplete();
@@ -112,6 +112,7 @@ const SetupPanel = ({ onComplete }: SetupPanelProps) => {
                   <SelectItem value="54">54</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-gray-400">Panel spaces must be an even number</p>
             </div>
             
             <div className="space-y-2">
