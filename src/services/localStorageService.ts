@@ -1,3 +1,4 @@
+
 // Types
 export interface PanelSettings {
   serviceRating: number;
@@ -21,7 +22,13 @@ const BREAKERS_KEY = 'panel_breakers';
 
 // Panel Settings functions
 export const savePanelSettings = (settings: PanelSettings): void => {
+  const oldSettings = getPanelSettings();
   localStorage.setItem(PANEL_SETTINGS_KEY, JSON.stringify(settings));
+  
+  // When breaker count changes, update breakers accordingly
+  if (oldSettings && oldSettings.breakerCount !== settings.breakerCount) {
+    updateBreakersCount(settings.breakerCount);
+  }
 };
 
 export const getPanelSettings = (): PanelSettings | null => {
@@ -35,6 +42,38 @@ export const getPanelSettings = (): PanelSettings | null => {
   }
   
   return parsedSettings;
+};
+
+// Function to update breakers when count changes
+const updateBreakersCount = (newCount: number): void => {
+  const existingBreakers = getBreakers();
+  const currentCount = existingBreakers.length;
+  
+  if (newCount === currentCount) return;
+  
+  if (newCount > currentCount) {
+    // Add new breakers
+    const additionalBreakers: Breaker[] = Array.from(
+      { length: newCount - currentCount }, 
+      (_, index) => {
+        const newPosition = currentCount + index + 1;
+        return {
+          id: newPosition,
+          name: `Breaker ${newPosition}`,
+          amperage: 0,
+          isOn: true,
+          position: newPosition,
+          interruptionType: 'Standard Trip',
+          breakerType: 'Single Pole'
+        };
+      }
+    );
+    
+    saveBreakers([...existingBreakers, ...additionalBreakers]);
+  } else {
+    // Remove breakers from the end
+    saveBreakers(existingBreakers.slice(0, newCount));
+  }
 };
 
 // Breaker functions
