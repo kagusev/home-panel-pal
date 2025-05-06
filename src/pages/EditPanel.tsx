@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { savePanelSettings, getPanelSettings, getBreakers } from '@/services/localStorageService';
+import { savePanelSettings, getPanelSettings, getBreakers, initializeBreakers } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -56,6 +56,10 @@ const EditPanel = () => {
       return;
     }
     
+    // Get current breakers to check if we need to adjust
+    const existingBreakers = getBreakers();
+    const currentBreakerCount = existingBreakers.length;
+    
     if (breakerCount > spaces) {
       toast({
         variant: "destructive",
@@ -65,7 +69,16 @@ const EditPanel = () => {
       return;
     }
     
-    // Save panel settings (this will automatically update breakers as needed)
+    if (currentBreakerCount > spaces) {
+      toast({
+        variant: "destructive",
+        title: "Insufficient spaces",
+        description: "The current number of breakers exceeds the panel's capacity. Please reduce number of breakers"
+      });
+      return;
+    }
+
+    // Save panel settings
     savePanelSettings({ serviceRating, breakerCount, spaces });
     
     toast({

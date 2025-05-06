@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import BreakerItem from './BreakerItem';
 import { getBreakers, getPanelSettings, toggleBreakerState, Breaker } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from 'react-router-dom';
 
 const ElectricalPanel = () => {
@@ -63,9 +64,25 @@ const ElectricalPanel = () => {
       : breakers.slice(halfLength);   // Second half
   };
 
+  // Calculate panel height based on number of spaces
+  const getPanelHeight = () => {
+    // Each space typically takes about 48px height (including margins)
+    // We divide by 2 since we have two columns
+    const baseHeight = 100; // Base padding and header space
+    const spacesPerColumn = Math.ceil(panelSettings.spaces / 2);
+    const spaceHeight = 48; // Height per space in pixels
+    
+    return baseHeight + (spacesPerColumn * spaceHeight);
+  };
+  
+  const panelStyle = {
+    minHeight: `${getPanelHeight()}px`,
+    maxHeight: `${getPanelHeight()}px`,
+  };
+  
   return (
-    <div className="flex flex-col h-screen p-2">
-      <div className="absolute top-2 left-2 z-10">
+    <div className="container mx-auto p-2 max-h-screen flex flex-col">
+      <header className="mb-3">
         <h1 className="text-xl font-bold text-white mb-1">Electrical Panel</h1>
         <div className="text-xs text-gray-400">
           <p>Service Rating: {panelSettings.serviceRating} Amps</p>
@@ -80,15 +97,16 @@ const ElectricalPanel = () => {
             Edit Panel Details
           </Button>
         </div>
-      </div>
+      </header>
       
-      <div className="flex-grow h-full pt-24 pb-2 px-2">
-        <div 
-          className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg h-full"
-        >
+      <div 
+        className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1 overflow-auto"
+        style={panelStyle}
+      >
+        <ScrollArea className="h-full">
           <div className="flex gap-2 h-full">
             {/* Left Column */}
-            <div className="flex-1 space-y-1 h-full flex flex-col">
+            <div className="flex-1 space-y-1">
               {getColumnBreakers('left').map((breaker) => (
                 <BreakerItem
                   key={breaker.id}
@@ -99,7 +117,7 @@ const ElectricalPanel = () => {
             </div>
             
             {/* Right Column */}
-            <div className="flex-1 space-y-1 h-full flex flex-col">
+            <div className="flex-1 space-y-1">
               {getColumnBreakers('right').map((breaker) => (
                 <BreakerItem
                   key={breaker.id}
@@ -109,7 +127,7 @@ const ElectricalPanel = () => {
               ))}
             </div>
           </div>
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );
