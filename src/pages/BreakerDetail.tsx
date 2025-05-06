@@ -99,7 +99,7 @@ const BreakerDetail = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle>Breaker {breaker.position} Details</CardTitle>
+          <CardTitle>Breaker {breaker.position} </CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
