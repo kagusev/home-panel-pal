@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { savePanelSettings, getPanelSettings, initializeBreakers } from '@/services/localStorageService';
+import { savePanelSettings, getPanelSettings, getBreakers, initializeBreakers } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -52,6 +52,19 @@ const EditPanel = () => {
         variant: "destructive",
         title: "Invalid number of spaces",
         description: "The number of spaces must be even."
+      });
+      return;
+    }
+    
+    // Get current breakers to check if we need to adjust
+    const existingBreakers = getBreakers();
+    const currentBreakerCount = existingBreakers.length;
+    
+    if (currentBreakerCount > spaces) {
+      toast({
+        variant: "destructive",
+        title: "Too many breakers",
+        description: "The number of spaces cannot be less than your current breaker count. Please remove some breakers first or increase the number of spaces."
       });
       return;
     }
@@ -131,9 +144,10 @@ const EditPanel = () => {
                   value={breakerCount}
                   onChange={(e) => setBreakerCount(parseInt(e.target.value) || 0)}
                   min="1"
-                  max="100"
+                  max={spaces}
                   required
                 />
+                <p className="text-xs text-gray-400">Cannot exceed the number of spaces ({spaces})</p>
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -123,6 +122,7 @@ const BreakerDetail = () => {
                   <SelectValue placeholder="Select breaker type" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="Main">Main</SelectItem>
                   <SelectItem value="Single Pole">Single Pole</SelectItem>
                   <SelectItem value="Double Pole">Double Pole</SelectItem>
                   <SelectItem value="Triple Pole">Triple Pole</SelectItem>

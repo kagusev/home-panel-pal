@@ -76,7 +76,7 @@ export const initializeBreakers = (count: number): void => {
     isOn: true,
     position: index + 1,
     interruptionType: 'Standard Trip',
-    breakerType: 'Single Pole'
+    breakerType: index === 0 ? 'Main' : 'Single Pole' // Set first breaker as Main
   }));
   
   saveBreakers(newBreakers);

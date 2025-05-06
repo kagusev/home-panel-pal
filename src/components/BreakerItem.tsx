@@ -36,7 +36,11 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="text-sm text-white font-medium truncate">{breaker.name || `Breaker ${breaker.position}`}</h3>
-        <p className="text-xs text-gray-400">{breaker.amperage > 0 ? `${breaker.amperage}A` : 'No amperage set'}</p>
+        <p className="text-xs text-gray-400">
+          {breaker.amperage > 0 ? `${breaker.amperage}A` : 'No amperage set'} 
+          {breaker.interruptionType && breaker.interruptionType !== 'Standard Trip' && 
+            ` • ${breaker.interruptionType}`}
+        </p>
       </div>
     </div>
   );

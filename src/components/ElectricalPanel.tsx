@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ElectricalPanel = () => {
   const [breakers, setBreakers] = useState<Breaker[]>([]);
-  const [panelSettings, setPanelSettings] = useState({ serviceRating: 0, breakerCount: 0 });
+  const [panelSettings, setPanelSettings] = useState({ serviceRating: 0, breakerCount: 0, spaces: 24 });
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -62,6 +62,7 @@ const ElectricalPanel = () => {
         <h1 className="text-xl font-bold text-white mb-1">Electrical Panel</h1>
         <div className="text-xs text-gray-400">
           <p>Service Rating: {panelSettings.serviceRating} Amps</p>
+          <p>Panel Spaces: {panelSettings.spaces || 24}</p>
           <p>Total Breakers: {panelSettings.breakerCount}</p>
           <Button 
             variant="ghost" 

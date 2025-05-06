@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { savePanelSettings, initializeBreakers } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 
@@ -14,6 +15,7 @@ interface SetupPanelProps {
 const SetupPanel = ({ onComplete }: SetupPanelProps) => {
   const [serviceRating, setServiceRating] = useState<number>(200);
   const [breakerCount, setBreakerCount] = useState<number>(20);
+  const [spaces, setSpaces] = useState<number>(24);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,9 +37,27 @@ const SetupPanel = ({ onComplete }: SetupPanelProps) => {
       });
       return;
     }
+    
+    if (spaces % 2 !== 0) {
+      toast({
+        variant: "destructive",
+        title: "Invalid number of spaces",
+        description: "The number of spaces must be even."
+      });
+      return;
+    }
+    
+    if (breakerCount > spaces) {
+      toast({
+        variant: "destructive",
+        title: "Too many breakers",
+        description: "The number of breakers cannot exceed the number of spaces."
+      });
+      return;
+    }
 
     // Save panel settings
-    savePanelSettings({ serviceRating, breakerCount });
+    savePanelSettings({ serviceRating, breakerCount, spaces });
     
     // Initialize breakers
     initializeBreakers(breakerCount);
@@ -71,6 +91,29 @@ const SetupPanel = ({ onComplete }: SetupPanelProps) => {
                 required
               />
             </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="panel-spaces">Number of Spaces</Label>
+              <Select 
+                value={spaces.toString()} 
+                onValueChange={(value) => setSpaces(parseInt(value))}
+              >
+                <SelectTrigger id="panel-spaces" className="w-full">
+                  <SelectValue placeholder="Select number of spaces" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="12">12</SelectItem>
+                  <SelectItem value="16">16</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="24">24</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="36">36</SelectItem>
+                  <SelectItem value="42">42</SelectItem>
+                  <SelectItem value="54">54</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="breaker-count">Number of Breakers</Label>
               <Input
@@ -79,9 +122,10 @@ const SetupPanel = ({ onComplete }: SetupPanelProps) => {
                 value={breakerCount}
                 onChange={(e) => setBreakerCount(parseInt(e.target.value) || 0)}
                 min="1"
-                max="100"
+                max={spaces}
                 required
               />
+              <p className="text-xs text-gray-400">Cannot exceed the number of spaces ({spaces})</p>
             </div>
           </CardContent>
           <CardFooter>
