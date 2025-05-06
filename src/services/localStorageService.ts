@@ -1,9 +1,8 @@
-
 // Types
 export interface PanelSettings {
   serviceRating: number;
   breakerCount: number;
-  spaces?: number;
+  spaces: number; // Changed from optional to required
 }
 
 export interface Breaker {
@@ -28,7 +27,14 @@ export const savePanelSettings = (settings: PanelSettings): void => {
 export const getPanelSettings = (): PanelSettings | null => {
   const settings = localStorage.getItem(PANEL_SETTINGS_KEY);
   if (!settings) return null;
-  return JSON.parse(settings);
+  
+  // Parse settings and ensure spaces has a default value
+  const parsedSettings = JSON.parse(settings);
+  if (parsedSettings && !parsedSettings.spaces) {
+    parsedSettings.spaces = 24; // Default value if not set
+  }
+  
+  return parsedSettings;
 };
 
 // Breaker functions

@@ -9,7 +9,11 @@ import { useNavigate } from 'react-router-dom';
 
 const ElectricalPanel = () => {
   const [breakers, setBreakers] = useState<Breaker[]>([]);
-  const [panelSettings, setPanelSettings] = useState({ serviceRating: 0, breakerCount: 0, spaces: 24 });
+  const [panelSettings, setPanelSettings] = useState({ 
+    serviceRating: 0, 
+    breakerCount: 0, 
+    spaces: 24 // Default value
+  });
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -20,7 +24,11 @@ const ElectricalPanel = () => {
     // Load panel settings
     const settings = getPanelSettings();
     if (settings) {
-      setPanelSettings(settings);
+      setPanelSettings({
+        serviceRating: settings.serviceRating,
+        breakerCount: settings.breakerCount,
+        spaces: settings.spaces || 24 // Ensure spaces has a default value
+      });
     }
   }, []);
   
