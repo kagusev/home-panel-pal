@@ -45,7 +45,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
         return ''; // Default width for Single Pole
     }
   };
-
+/*
   // Display the spaces used by this breaker
   const getSpacesLabel = () => {
     switch (breaker.breakerType) {
@@ -58,7 +58,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
         return '';
     }
   };
-
+*/
   // Adjust the handle size based on the breaker type
   const getHandleHeightClass = () => {
     switch (breaker.breakerType) {
