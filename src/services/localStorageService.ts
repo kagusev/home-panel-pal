@@ -1,3 +1,4 @@
+
 // Types
 export interface PanelSettings {
   serviceRating: number;
@@ -21,7 +22,13 @@ const BREAKERS_KEY = 'panel_breakers';
 
 // Panel Settings functions
 export const savePanelSettings = (settings: PanelSettings): void => {
+  const previousSettings = getPanelSettings();
   localStorage.setItem(PANEL_SETTINGS_KEY, JSON.stringify(settings));
+  
+  // If breaker count changed, update the breakers accordingly
+  if (previousSettings && previousSettings.breakerCount !== settings.breakerCount) {
+    updateBreakersCount(settings.breakerCount);
+  }
 };
 
 export const getPanelSettings = (): PanelSettings | null => {
@@ -86,6 +93,41 @@ export const initializeBreakers = (count: number): void => {
   }));
   
   saveBreakers(newBreakers);
+};
+
+// Update breakers count when settings change
+export const updateBreakersCount = (newCount: number): void => {
+  const breakers = getBreakers();
+  
+  if (breakers.length === newCount) {
+    // No change needed
+    return;
+  } else if (breakers.length > newCount) {
+    // Remove excess breakers
+    const updatedBreakers = breakers.slice(0, newCount);
+    saveBreakers(updatedBreakers);
+  } else {
+    // Add more breakers
+    const additionalCount = newCount - breakers.length;
+    const highestId = breakers.length > 0 
+      ? Math.max(...breakers.map(b => b.id)) 
+      : 0;
+    const highestPosition = breakers.length > 0 
+      ? Math.max(...breakers.map(b => b.position)) 
+      : 0;
+      
+    const newBreakers: Breaker[] = Array.from({ length: additionalCount }, (_, index) => ({
+      id: highestId + index + 1,
+      name: `Breaker ${highestPosition + index + 1}`,
+      amperage: 0,
+      isOn: true,
+      position: highestPosition + index + 1,
+      interruptionType: 'Standard Trip',
+      breakerType: 'Single Pole'
+    }));
+    
+    saveBreakers([...breakers, ...newBreakers]);
+  }
 };
 
 // Clear all data

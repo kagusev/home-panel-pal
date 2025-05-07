@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { savePanelSettings, getPanelSettings, getBreakers, initializeBreakers } from '@/services/localStorageService';
+import { savePanelSettings, getPanelSettings, getBreakers } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -15,6 +15,7 @@ const EditPanel = () => {
   const [serviceRating, setServiceRating] = useState<number>(200);
   const [breakerCount, setBreakerCount] = useState<number>(20);
   const [spaces, setSpaces] = useState<number>(24);
+  const [currentBreakers, setCurrentBreakers] = useState<number>(0);
   
   useEffect(() => {
     // Load existing panel settings
@@ -24,6 +25,10 @@ const EditPanel = () => {
       setBreakerCount(settings.breakerCount || 20);
       setSpaces(settings.spaces || 24);
     }
+    
+    // Get current breaker count
+    const breakers = getBreakers();
+    setCurrentBreakers(breakers.length);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,10 +61,6 @@ const EditPanel = () => {
       return;
     }
     
-    // Get current breakers to check if we need to adjust
-    const existingBreakers = getBreakers();
-    const currentBreakerCount = existingBreakers.length;
-    
     if (breakerCount > spaces) {
       toast({
         variant: "destructive",
@@ -68,22 +69,19 @@ const EditPanel = () => {
       });
       return;
     }
-    
-    if (currentBreakerCount > spaces) {
-      toast({
-        variant: "destructive",
-        title: "Insufficient spaces",
-        description: "The current number of breakers exceeds the panel's capacity. Please reduce number of breakers"
-      });
-      return;
-    }
 
-    // Save panel settings
+    // Save panel settings (this will also update the breakers count due to our changes in localStorageService)
     savePanelSettings({ serviceRating, breakerCount, spaces });
+    
+    const changeMessage = breakerCount > currentBreakers
+      ? `Added ${breakerCount - currentBreakers} new breakers.`
+      : breakerCount < currentBreakers
+        ? `Removed ${currentBreakers - breakerCount} breakers.`
+        : 'No change to breaker count.';
     
     toast({
       title: "Panel Updated",
-      description: `Your electrical panel now has ${spaces} spaces with ${breakerCount} breakers.`
+      description: `Your electrical panel now has ${spaces} spaces with ${breakerCount} breakers. ${changeMessage}`
     });
     
     navigate('/');
@@ -158,6 +156,13 @@ const EditPanel = () => {
                   required
                 />
                 <p className="text-xs text-gray-400">Cannot exceed the number of spaces ({spaces})</p>
+                {currentBreakers !== breakerCount && (
+                  <p className="text-xs text-amber-400">
+                    {breakerCount > currentBreakers 
+                      ? `Will add ${breakerCount - currentBreakers} breakers` 
+                      : `Will remove ${currentBreakers - breakerCount} breakers`}
+                  </p>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">

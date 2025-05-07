@@ -66,68 +66,61 @@ const ElectricalPanel = () => {
 
   // Calculate panel height based on number of spaces
   const getPanelHeight = () => {
-    // Each space typically takes about 48px height (including margins)
-    // We divide by 2 since we have two columns
-    const baseHeight = 100; // Base padding and header space
-    const spacesPerColumn = Math.ceil(panelSettings.spaces / 2);
-    const spaceHeight = 48; // Height per space in pixels
-    
-    return baseHeight + (spacesPerColumn * spaceHeight);
-  };
-  
-  const panelStyle = {
-    minHeight: `${getPanelHeight()}px`,
-    maxHeight: `${getPanelHeight()}px`,
+    const viewportHeight = window.innerHeight;
+    // Use 85% of viewport height for the panel, leaving room for header
+    return `${viewportHeight * 0.85}px`;
   };
   
   return (
-    <div className="container mx-auto p-2 max-h-screen flex flex-col">
-      <header className="mb-3">
-        <h1 className="text-xl font-bold text-white mb-1">Electrical Panel</h1>
-        <div className="text-xs text-gray-400">
-          <p>Service Rating: {panelSettings.serviceRating} Amps</p>
-          <p>Panel Spaces: {panelSettings.spaces || 24}</p>
-          <p>Total Breakers: {panelSettings.breakerCount}</p>
+    <div className="container mx-auto p-2 h-screen flex flex-col">
+      <header className="mb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-xl font-bold text-white">Electrical Panel</h1>
+            <div className="text-xs text-gray-400 flex flex-col">
+              <span>Service Rating: {panelSettings.serviceRating} Amps</span>
+              <span>Panel Spaces: {panelSettings.spaces}</span>
+              <span>Total Breakers: {breakers.length}</span>
+            </div>
+          </div>
           <Button 
-            variant="ghost" 
+            variant="outline" 
             size="sm" 
             onClick={handleEditPanel}
-            className="text-xs mt-1 text-gray-300 hover:text-white"
+            className="text-xs text-gray-300 hover:text-white"
           >
-            Edit Panel Details
+            Edit Panel
           </Button>
         </div>
       </header>
       
       <div 
-        className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1 overflow-auto"
-        style={panelStyle}
+        className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1"
+        style={{ height: getPanelHeight() }}
       >
-        <ScrollArea className="h-full">
-          <div className="flex gap-2 h-full">
-            {/* Left Column */}
-            <div className="flex-1 space-y-1">
-              {getColumnBreakers('left').map((breaker) => (
-                <BreakerItem
-                  key={breaker.id}
-                  breaker={breaker}
-                  onToggle={handleToggleBreaker}
-                />
-              ))}
-            </div>
-            
-            {/* Right Column */}
-            <div className="flex-1 space-y-1">
-              {getColumnBreakers('right').map((breaker) => (
-                <BreakerItem
-                  key={breaker.id}
-                  breaker={breaker}
-                  onToggle={handleToggleBreaker}
-                />
-              ))}
-            </div>
+        <div className="h-full flex gap-2">
+          {/* Left Column */}
+          <div className="flex-1 space-y-1 overflow-auto">
+            {getColumnBreakers('left').map((breaker) => (
+              <BreakerItem
+                key={breaker.id}
+                breaker={breaker}
+                onToggle={handleToggleBreaker}
+              />
+            ))}
           </div>
-        </ScrollArea>
+          
+          {/* Right Column */}
+          <div className="flex-1 space-y-1 overflow-auto">
+            {getColumnBreakers('right').map((breaker) => (
+              <BreakerItem
+                key={breaker.id}
+                breaker={breaker}
+                onToggle={handleToggleBreaker}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
