@@ -87,12 +87,53 @@ const ElectricalPanel = () => {
     navigate('/edit-panel');
   };
   
-  // Function to split breakers into left and right columns based on first half and second half
+  // Calculate total spaces used by all breakers
+  const getTotalSpacesUsed = () => {
+    return breakers.reduce((total, breaker) => {
+      if (breaker.breakerType === 'Main' || breaker.breakerType === 'Double Pole') {
+        return total + 2; // Main and Double Pole breakers take 2 spaces
+      } else if (breaker.breakerType === 'Triple Pole') {
+        return total + 3; // Triple Pole breakers take 3 spaces
+      }
+      return total + 1; // Single Pole takes 1 space
+    }, 0);
+  };
+
+  // Function to organize breakers into columns
   const getColumnBreakers = (column: 'left' | 'right') => {
-    const halfLength = Math.ceil(breakers.length / 2);
-    return column === 'left' 
-      ? breakers.slice(0, halfLength) // First half
-      : breakers.slice(halfLength);   // Second half
+    // Create a copy of breakers to avoid modifying the original
+    const breakers_with_spaces = [...breakers];
+    let currentSpace = 0;
+    const leftBreakers = [];
+    const rightBreakers = [];
+    
+    for (const breaker of breakers_with_spaces) {
+      const spaces = getSpacesForBreaker(breaker.breakerType || 'Single Pole');
+      
+      // If this is a left column breaker
+      if (currentSpace < panelSettings.spaces / 2) {
+        leftBreakers.push(breaker);
+        currentSpace += spaces;
+      } else {
+        rightBreakers.push(breaker);
+        currentSpace += spaces;
+      }
+    }
+    
+    return column === 'left' ? leftBreakers : rightBreakers;
+  };
+
+  // Helper function to get spaces for a breaker type
+  const getSpacesForBreaker = (breakerType: string): number => {
+    switch (breakerType) {
+      case 'Main':
+      case 'Double Pole':
+        return 2;
+      case 'Triple Pole':
+        return 3;
+      default:
+        return 1;
+    }
   };
   
   return (
@@ -105,6 +146,7 @@ const ElectricalPanel = () => {
               <span>Service Rating: {panelSettings.serviceRating} Amps</span>
               <span>Panel Spaces: {panelSettings.spaces}</span>
               <span>Total Breakers: {breakers.length}</span>
+              <span>Spaces Used: {getTotalSpacesUsed()} of {panelSettings.spaces}</span>
             </div>
           </div>
           <Button 

@@ -20,9 +20,35 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
     onToggle(breaker.id);
   };
 
+  // Determine width class based on breaker type
+  const getWidthClass = () => {
+    switch (breaker.breakerType) {
+      case 'Main':
+      case 'Double Pole':
+        return 'relative'; // Double width for Main and Double Pole
+      case 'Triple Pole':
+        return 'relative'; // Triple width for Triple Pole
+      default:
+        return ''; // Default width for Single Pole
+    }
+  };
+
+  // Display the spaces used by this breaker
+  const getSpacesLabel = () => {
+    switch (breaker.breakerType) {
+      case 'Main':
+      case 'Double Pole':
+        return '(2 spaces)';
+      case 'Triple Pole':
+        return '(3 spaces)';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div 
-      className="flex items-center bg-gray-800 border border-panel-border rounded-md p-2 cursor-pointer"
+      className={`flex items-center bg-gray-800 border border-panel-border rounded-md p-2 cursor-pointer ${getWidthClass()}`}
       onClick={handleClick}
     >
       <div className="flex flex-col items-center mr-2">
@@ -35,11 +61,16 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
         <span className="text-xs text-gray-400 mt-0.5">{breaker.position}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm text-white font-medium truncate">{breaker.name || `Breaker ${breaker.position}`}</h3>
+        <h3 className="text-sm text-white font-medium truncate">
+          {breaker.name || `Breaker ${breaker.position}`} 
+          {breaker.breakerType !== 'Single Pole' && 
+           <span className="ml-1 text-xs text-gray-400">{getSpacesLabel()}</span>}
+        </h3>
         <p className="text-xs text-gray-400">
           {breaker.amperage > 0 ? `${breaker.amperage}A` : 'No amperage set'} 
           {breaker.interruptionType && breaker.interruptionType !== 'Standard Trip' && 
             ` • ${breaker.interruptionType}`}
+          {breaker.breakerType && ` • ${breaker.breakerType}`}
         </p>
       </div>
     </div>
