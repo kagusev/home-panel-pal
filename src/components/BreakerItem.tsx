@@ -84,7 +84,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
         >
           <div className={`w-1.5 ${getHandleHeightClass()} bg-panel-breaker-handle rounded-sm`}></div>
         </div>
-        <span className="text-xs text-gray-400 mt-0.5">{breaker.position}</span>
+       // <span className="text-xs text-gray-400 mt-0.5">{breaker.position}</span> kg_5.6.25
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="text-sm text-white font-medium truncate">
