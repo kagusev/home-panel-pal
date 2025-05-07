@@ -20,6 +20,19 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
     onToggle(breaker.id);
   };
 
+  // Determine height class based on breaker type
+  const getHeightClass = () => {
+    switch (breaker.breakerType) {
+      case 'Main':
+      case 'Double Pole':
+        return 'h-24'; // Double height for Main and Double Pole
+      case 'Triple Pole':
+        return 'h-36'; // Triple height for Triple Pole
+      default:
+        return 'h-12'; // Default height for Single Pole
+    }
+  };
+
   // Determine width class based on breaker type
   const getWidthClass = () => {
     switch (breaker.breakerType) {
@@ -46,17 +59,30 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
     }
   };
 
+  // Adjust the handle size based on the breaker type
+  const getHandleHeightClass = () => {
+    switch (breaker.breakerType) {
+      case 'Main':
+      case 'Double Pole':
+        return 'h-10'; // Double height for the handle
+      case 'Triple Pole':
+        return 'h-16'; // Triple height for the handle
+      default:
+        return 'h-5'; // Default height for the handle
+    }
+  };
+
   return (
     <div 
-      className={`flex items-center bg-gray-800 border border-panel-border rounded-md p-2 cursor-pointer ${getWidthClass()}`}
+      className={`flex items-center bg-gray-800 border border-panel-border rounded-md p-2 cursor-pointer ${getWidthClass()} ${getHeightClass()} transition-all duration-200`}
       onClick={handleClick}
     >
       <div className="flex flex-col items-center mr-2">
         <div 
-          className={`w-5 h-8 rounded-sm border border-gray-600 flex items-center justify-center cursor-pointer ${breaker.isOn ? 'bg-panel-breaker-on' : 'bg-panel-breaker-off'}`}
+          className={`w-5 ${breaker.breakerType === 'Triple Pole' ? 'h-16' : breaker.breakerType === 'Main' || breaker.breakerType === 'Double Pole' ? 'h-12' : 'h-8'} rounded-sm border border-gray-600 flex items-center justify-center cursor-pointer ${breaker.isOn ? 'bg-panel-breaker-on' : 'bg-panel-breaker-off'}`}
           onClick={handleToggle}
         >
-          <div className="w-1.5 h-5 bg-panel-breaker-handle rounded-sm"></div>
+          <div className={`w-1.5 ${getHandleHeightClass()} bg-panel-breaker-handle rounded-sm`}></div>
         </div>
         <span className="text-xs text-gray-400 mt-0.5">{breaker.position}</span>
       </div>
