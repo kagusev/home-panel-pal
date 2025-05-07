@@ -1,10 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import BreakerItem from './BreakerItem';
 import { getBreakers, getPanelSettings, toggleBreakerState, Breaker } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from 'react-router-dom';
 
 const ElectricalPanel = () => {
@@ -14,6 +13,8 @@ const ElectricalPanel = () => {
     breakerCount: 0, 
     spaces: 24 // Default value
   });
+  const [panelHeight, setPanelHeight] = useState('auto');
+  const panelRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -30,7 +31,37 @@ const ElectricalPanel = () => {
         spaces: settings.spaces || 24 // Ensure spaces has a default value
       });
     }
+    
+    // Calculate and set the initial panel height
+    updatePanelHeight();
+    
+    // Add window resize event listener
+    window.addEventListener('resize', updatePanelHeight);
+    
+    // Clean up event listener on unmount
+    return () => {
+      window.removeEventListener('resize', updatePanelHeight);
+    };
   }, []);
+  
+  // Update panel height based on viewport and content
+  const updatePanelHeight = () => {
+    if (!panelRef.current) return;
+    
+    // Get the viewport height
+    const viewportHeight = window.innerHeight;
+    
+    // Get the header element's height (container's first child)
+    const headerElement = panelRef.current.parentElement?.querySelector('header');
+    const headerHeight = headerElement ? headerElement.offsetHeight : 0;
+    
+    // Calculate available height (viewport - header - padding)
+    const padding = 32; // 16px top + 16px bottom padding (2rem)
+    const availableHeight = viewportHeight - headerHeight - padding;
+    
+    // Set the panel height to fit available space
+    setPanelHeight(`${availableHeight}px`);
+  };
   
   const handleToggleBreaker = (id: number) => {
     toggleBreakerState(id);
@@ -63,16 +94,9 @@ const ElectricalPanel = () => {
       ? breakers.slice(0, halfLength) // First half
       : breakers.slice(halfLength);   // Second half
   };
-
-  // Calculate panel height based on number of spaces
-  const getPanelHeight = () => {
-    const viewportHeight = window.innerHeight;
-    // Use 85% of viewport height for the panel, leaving room for header
-    return `${viewportHeight * 0.85}px`;
-  };
   
   return (
-    <div className="container mx-auto p-2 h-screen flex flex-col">
+    <div ref={panelRef} className="container mx-auto p-2 min-h-screen flex flex-col">
       <header className="mb-2">
         <div className="flex justify-between items-start">
           <div>
@@ -96,11 +120,11 @@ const ElectricalPanel = () => {
       
       <div 
         className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1"
-        style={{ height: getPanelHeight() }}
+        style={{ height: panelHeight }}
       >
         <div className="h-full flex gap-2">
           {/* Left Column */}
-          <div className="flex-1 space-y-1 overflow-auto">
+          <div className="flex-1 space-y-1">
             {getColumnBreakers('left').map((breaker) => (
               <BreakerItem
                 key={breaker.id}
@@ -111,7 +135,7 @@ const ElectricalPanel = () => {
           </div>
           
           {/* Right Column */}
-          <div className="flex-1 space-y-1 overflow-auto">
+          <div className="flex-1 space-y-1">
             {getColumnBreakers('right').map((breaker) => (
               <BreakerItem
                 key={breaker.id}
