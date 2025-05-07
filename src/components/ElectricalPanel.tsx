@@ -51,9 +51,13 @@ const ElectricalPanel = () => {
     // Get the viewport height
     const viewportHeight = window.innerHeight;
     
-    // Calculate available height (viewport - padding)
+    // Get the header element's height (container's first child)
+    const headerElement = panelRef.current.parentElement?.querySelector('header');
+    const headerHeight = headerElement ? headerElement.offsetHeight : 0;
+    
+    // Calculate available height (viewport - header - padding)
     const padding = 32; // 16px top + 16px bottom padding (2rem)
-    const availableHeight = viewportHeight - padding;
+    const availableHeight = viewportHeight - headerHeight - padding;
     
     // Set the panel height to fit available space
     setPanelHeight(`${availableHeight}px`);
@@ -92,10 +96,9 @@ const ElectricalPanel = () => {
   };
   
   return (
-    <div ref={panelRef} className="container mx-auto p-2 min-h-screen flex flex-col sm:flex-row">
-      {/* Left side header */}
-      <header className="w-full sm:w-48 pr-4 mb-2 sm:mb-0">
-        <div className="flex sm:flex-col justify-between items-start">
+    <div ref={panelRef} className="container mx-auto p-2 min-h-screen flex flex-col">
+      <header className="mb-2">
+        <div className="flex justify-between items-start">
           <div>
             <h1 className="text-xl font-bold text-white">Electrical Panel</h1>
             <div className="text-xs text-gray-400 flex flex-col">
@@ -108,14 +111,13 @@ const ElectricalPanel = () => {
             variant="outline" 
             size="sm" 
             onClick={handleEditPanel}
-            className="text-xs text-gray-300 hover:text-white mt-0 sm:mt-4"
+            className="text-xs text-gray-300 hover:text-white"
           >
             Edit Panel
           </Button>
         </div>
       </header>
       
-      {/* Main panel area */}
       <div 
         className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1"
         style={{ height: panelHeight }}
