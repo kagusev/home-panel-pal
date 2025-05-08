@@ -6,9 +6,18 @@ import { useNavigate } from 'react-router-dom';
 interface BreakerItemProps {
   breaker: Breaker;
   onToggle: (id: number) => void;
+  onDragStart: (e: React.DragEvent, breaker: Breaker) => void;
+  onDrop: (e: React.DragEvent, breaker: Breaker) => void;
+  onDragOver: (e: React.DragEvent) => void;
 }
 
-const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
+const BreakerItem = ({ 
+  breaker, 
+  onToggle,
+  onDragStart,
+  onDrop,
+  onDragOver
+}: BreakerItemProps) => {
   const navigate = useNavigate();
   
   const handleClick = () => {
@@ -20,16 +29,19 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
     onToggle(breaker.id);
   };
 
-  // Determine height class based on breaker type (with 10% increase for single pole)
+  // Base height for single pole breaker - this will be the unit
+  const singlePoleHeight = 'h-14'; // Increased height for better touch target
+  
+  // Determine height class based on breaker type
   const getHeightClass = () => {
     switch (breaker.breakerType) {
       case 'Main':
       case 'Double Pole':
-        return 'h-24'; // Double height for Main and Double Pole
+        return 'h-[7rem]'; // Exactly double the single pole height (3.5rem * 2)
       case 'Triple Pole':
-        return 'h-36'; // Triple height for Triple Pole
+        return 'h-[10.5rem]'; // Exactly triple the single pole height (3.5rem * 3)
       default:
-        return 'h-[3.3rem]'; // 10% increase from original h-12 (which is 3rem)
+        return singlePoleHeight; // Single pole standard height
     }
   };
 
@@ -61,8 +73,12 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
 
   return (
     <div 
-      className={`flex items-center bg-gray-800 border border-panel-border rounded-md p-2 cursor-pointer ${getWidthClass()} ${getHeightClass()} transition-all duration-200`}
+      className={`flex items-center bg-gray-800 border border-panel-border rounded-md p-2 cursor-grab ${getWidthClass()} ${getHeightClass()} transition-all duration-200`}
       onClick={handleClick}
+      draggable
+      onDragStart={(e) => onDragStart(e, breaker)}
+      onDrop={(e) => onDrop(e, breaker)}
+      onDragOver={onDragOver}
     >
       <div className="flex flex-col items-center mr-2">
         <div 

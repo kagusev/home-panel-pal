@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import BreakerItem from './BreakerItem';
-import { getBreakers, getPanelSettings, toggleBreakerState, Breaker } from '@/services/localStorageService';
+import { getBreakers, getPanelSettings, toggleBreakerState, Breaker, saveBreakers } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -16,6 +16,7 @@ const ElectricalPanel = () => {
     spaces: 24 // Default value
   });
   const [panelHeight, setPanelHeight] = useState('auto');
+  const [draggedBreaker, setDraggedBreaker] = useState<Breaker | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   
@@ -87,6 +88,68 @@ const ElectricalPanel = () => {
 
   const handleEditPanel = () => {
     navigate('/edit-panel');
+  };
+  
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, breaker: Breaker) => {
+    setDraggedBreaker(breaker);
+    e.dataTransfer.effectAllowed = 'move';
+    // For better visual feedback
+    if (e.target instanceof HTMLElement) {
+      e.target.classList.add('opacity-50');
+    }
+  };
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  
+  const handleDrop = (e: React.DragEvent, targetBreaker: Breaker) => {
+    e.preventDefault();
+    
+    // Reset any visual effects from dragging
+    if (e.target instanceof HTMLElement) {
+      document.querySelectorAll('.opacity-50').forEach(el => el.classList.remove('opacity-50'));
+    }
+    
+    if (!draggedBreaker || draggedBreaker.id === targetBreaker.id) return;
+    
+    // Get positions to swap
+    const draggedPosition = draggedBreaker.position;
+    const targetPosition = targetBreaker.position;
+    
+    // Update positions in state
+    const updatedBreakers = breakers.map(breaker => {
+      if (breaker.id === draggedBreaker.id) {
+        return { ...breaker, position: targetPosition };
+      }
+      if (breaker.id === targetBreaker.id) {
+        return { ...breaker, position: draggedPosition };
+      }
+      return breaker;
+    });
+    
+    // Save updated positions to local storage
+    saveBreakers(updatedBreakers);
+    
+    // Update state
+    setBreakers(updatedBreakers);
+    setDraggedBreaker(null);
+    
+    toast({
+      title: "Breaker Relocated",
+      description: `${draggedBreaker.name || `Breaker ${draggedBreaker.id}`} has been moved to position ${targetPosition}.`,
+      duration: 3000,
+    });
+  };
+  
+  const handleDragEnd = (e: React.DragEvent) => {
+    // Reset any visual effects from dragging
+    if (e.target instanceof HTMLElement) {
+      e.target.classList.remove('opacity-50');
+    }
+    setDraggedBreaker(null);
   };
   
   // Calculate total spaces used by all breakers
@@ -222,6 +285,8 @@ const ElectricalPanel = () => {
       <div 
         className="bg-panel-background border border-panel-border rounded-lg p-3 shadow-lg flex-1"
         style={{ height: panelHeight }}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
       >
         <div className="h-full flex gap-2">
           {/* Left Column */}
@@ -231,6 +296,9 @@ const ElectricalPanel = () => {
                 key={breaker.id}
                 breaker={breaker}
                 onToggle={handleToggleBreaker}
+                onDragStart={handleDragStart}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
               />
             ))}
           </div>
@@ -242,6 +310,9 @@ const ElectricalPanel = () => {
                 key={breaker.id}
                 breaker={breaker}
                 onToggle={handleToggleBreaker}
+                onDragStart={handleDragStart}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
               />
             ))}
           </div>
