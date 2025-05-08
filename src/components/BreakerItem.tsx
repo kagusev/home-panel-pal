@@ -29,7 +29,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       case 'Triple Pole':
         return 'h-36'; // Triple height for Triple Pole
       default:
-        return 'h-12'; // Default height for Single Pole
+        return 'h-[13.2rem]'; // Increased height by 10% for Single Pole (was h-12)
     }
   };
 
@@ -43,19 +43,6 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
         return 'relative'; // Triple width for Triple Pole
       default:
         return ''; // Default width for Single Pole
-    }
-  };
-
-  // Display the spaces used by this breaker
-  const getSpacesLabel = () => {
-    switch (breaker.breakerType) {
-      case 'Main':
-      case 'Double Pole':
-        return '(2 spaces)';
-      case 'Triple Pole':
-        return '(3 spaces)';
-      default:
-        return '';
     }
   };
 
@@ -88,9 +75,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="text-sm text-white font-medium truncate">
-          {breaker.name || `Breaker ${breaker.position}`} 
-          {breaker.breakerType !== 'Single Pole' && 
-           <span className="ml-1 text-xs text-gray-400">{getSpacesLabel()}</span>}
+          {breaker.name || `Breaker ${breaker.position}`}
         </h3>
         <p className="text-xs text-gray-400">
           {breaker.amperage > 0 ? `${breaker.amperage}A` : 'No amperage set'} 

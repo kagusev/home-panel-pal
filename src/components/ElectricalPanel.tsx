@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import BreakerItem from './BreakerItem';
@@ -99,30 +98,6 @@ const ElectricalPanel = () => {
     }, 0);
   };
 
-  // Function to organize breakers into columns
-  const getColumnBreakers = (column: 'left' | 'right') => {
-    // Create a copy of breakers to avoid modifying the original
-    const breakers_with_spaces = [...breakers];
-    let currentSpace = 0;
-    const leftBreakers = [];
-    const rightBreakers = [];
-    
-    for (const breaker of breakers_with_spaces) {
-      const spaces = getSpacesForBreaker(breaker.breakerType || 'Single Pole');
-      
-      // If this is a left column breaker
-      if (currentSpace < panelSettings.spaces / 2) {
-        leftBreakers.push(breaker);
-        currentSpace += spaces;
-      } else {
-        rightBreakers.push(breaker);
-        currentSpace += spaces;
-      }
-    }
-    
-    return column === 'left' ? leftBreakers : rightBreakers;
-  };
-
   // Helper function to get spaces for a breaker type
   const getSpacesForBreaker = (breakerType: string): number => {
     switch (breakerType) {
@@ -134,6 +109,44 @@ const ElectricalPanel = () => {
       default:
         return 1;
     }
+  };
+
+  // Function to organize breakers into columns
+  const getColumnBreakers = (column: 'left' | 'right') => {
+    // Create a copy of breakers to avoid modifying the original
+    const sortedBreakers = [...breakers].sort((a, b) => a.position - b.position);
+    
+    const leftColumnSpaces = Math.floor(panelSettings.spaces / 2);
+    const leftBreakers: Breaker[] = [];
+    const rightBreakers: Breaker[] = [];
+    
+    let leftSpacesUsed = 0;
+    let rightSpacesUsed = 0;
+    
+    for (const breaker of sortedBreakers) {
+      const breakerSpaces = getSpacesForBreaker(breaker.breakerType || 'Single Pole');
+      
+      // Try to keep spaces equal between columns
+      if (leftSpacesUsed < leftColumnSpaces && leftSpacesUsed + breakerSpaces <= leftColumnSpaces) {
+        leftBreakers.push(breaker);
+        leftSpacesUsed += breakerSpaces;
+      } else {
+        rightBreakers.push(breaker);
+        rightSpacesUsed += breakerSpaces;
+      }
+    }
+    
+    // Validate that spaces are equal (or as close as possible given breaker types)
+    if (Math.abs(leftSpacesUsed - rightSpacesUsed) > 2) {
+      console.warn(`Column spaces are not equal. Left: ${leftSpacesUsed}, Right: ${rightSpacesUsed}`);
+      toast({
+        variant: "destructive",
+        title: "Unbalanced panel",
+        description: `Left column: ${leftSpacesUsed} spaces, Right column: ${rightSpacesUsed} spaces. Try to balance your breakers.`
+      });
+    }
+    
+    return column === 'left' ? leftBreakers : rightBreakers;
   };
   
   return (
