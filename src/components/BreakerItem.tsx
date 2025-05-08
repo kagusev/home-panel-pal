@@ -96,7 +96,7 @@ const BreakerItem = ({
           {breaker.amperage > 0 ? `${breaker.amperage}A` : 'No amperage set'} 
           {breaker.interruptionType && breaker.interruptionType !== 'Standard Trip' && 
             ` • ${breaker.interruptionType}`}
-         /* {breaker.breakerType && ` • ${breaker.breakerType}`} removing breakerType from tile as it's getting too busy */
+          {breaker.breakerType && ` • ${breaker.breakerType}`} 
         </p>
       </div>
     </div>
