@@ -1,9 +1,12 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import BreakerItem from './BreakerItem';
 import { getBreakers, getPanelSettings, toggleBreakerState, Breaker } from '@/services/localStorageService';
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 const ElectricalPanel = () => {
   const [breakers, setBreakers] = useState<Breaker[]>([]);
@@ -111,6 +114,17 @@ const ElectricalPanel = () => {
     }
   };
 
+  // Function to calculate potential breakers that could fit in remaining spaces
+  const getPotentialBreakerCounts = (availableSpaces: number) => {
+    if (availableSpaces <= 0) return null;
+    
+    return {
+      singlePole: availableSpaces, // Number of single pole breakers that could fit
+      doublePole: Math.floor(availableSpaces / 2), // Number of double pole breakers
+      triplePole: Math.floor(availableSpaces / 3), // Number of triple pole breakers
+    };
+  };
+
   // Function to organize breakers into columns
   const getColumnBreakers = (column: 'left' | 'right') => {
     // Create a copy of breakers to avoid modifying the original
@@ -138,11 +152,43 @@ const ElectricalPanel = () => {
     
     // Validate that spaces are equal (or as close as possible given breaker types)
     if (Math.abs(leftSpacesUsed - rightSpacesUsed) > 2) {
-      console.warn(`Column spaces are not equal. Left: ${leftSpacesUsed}, Right: ${rightSpacesUsed}`);
+      const imbalance = Math.abs(leftSpacesUsed - rightSpacesUsed);
+      const columnWithSpace = leftSpacesUsed < rightSpacesUsed ? 'left' : 'right';
+      const availableSpaces = columnWithSpace === 'left' 
+        ? leftColumnSpaces - leftSpacesUsed
+        : (panelSettings.spaces - leftColumnSpaces) - rightSpacesUsed;
+      
+      // Calculate what breakers could fit
+      const potentialBreakers = getPotentialBreakerCounts(availableSpaces);
+      
       toast({
-        variant: "destructive",
-        title: "Unbalanced panel",
-        description: `Left column: ${leftSpacesUsed} spaces, Right column: ${rightSpacesUsed} spaces. Try to balance your breakers.`
+        title: "Panel Balance Information",
+        description: (
+          <div className="space-y-2">
+            <Alert variant="default" className="bg-blue-50 border-blue-200">
+              <Info className="h-4 w-4 text-blue-500" />
+              <AlertDescription>
+                <span className="font-medium">Unbalanced panel detected.</span> There's a difference of {imbalance} spaces between columns.
+              </AlertDescription>
+            </Alert>
+            {potentialBreakers && (
+              <div className="space-y-1 text-sm">
+                <p>In the {columnWithSpace} column, you could add:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>{potentialBreakers.singlePole} Single Pole breaker{potentialBreakers.singlePole !== 1 ? 's' : ''}</li>
+                  {potentialBreakers.doublePole > 0 && (
+                    <li>{potentialBreakers.doublePole} Double Pole breaker{potentialBreakers.doublePole !== 1 ? 's' : ''}</li>
+                  )}
+                  {potentialBreakers.triplePole > 0 && (
+                    <li>{potentialBreakers.triplePole} Triple Pole breaker{potentialBreakers.triplePole !== 1 ? 's' : ''}</li>
+                  )}
+                </ul>
+                <p className="mt-2">Visit <a className="underline text-blue-500" href="/edit-panel">Edit Panel</a> to balance your breakers.</p>
+              </div>
+            )}
+          </div>
+        ),
+        duration: 10000, // Extended duration for user to read the details
       });
     }
     

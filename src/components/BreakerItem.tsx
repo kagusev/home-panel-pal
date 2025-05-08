@@ -20,7 +20,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
     onToggle(breaker.id);
   };
 
-  // Determine height class based on breaker type
+  // Determine height class based on breaker type (with 10% increase for single pole)
   const getHeightClass = () => {
     switch (breaker.breakerType) {
       case 'Main':
@@ -29,7 +29,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       case 'Triple Pole':
         return 'h-36'; // Triple height for Triple Pole
       default:
-        return 'h-12'; // 
+        return 'h-[3.3rem]'; // 10% increase from original h-12 (which is 3rem)
     }
   };
 
@@ -71,7 +71,6 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
         >
           <div className={`w-1.5 ${getHandleHeightClass()} bg-panel-breaker-handle rounded-sm`}></div>
         </div>
-        <span className="text-xs text-gray-400 mt-0.5">{breaker.position}</span>
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="text-sm text-white font-medium truncate">
