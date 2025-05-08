@@ -29,7 +29,7 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       case 'Triple Pole':
         return 'h-36'; // Triple height for Triple Pole
       default:
-        return 'h-[13.2rem]'; // Increased height by 10% for Single Pole (was h-12)
+        return 'h-12'; // 
     }
   };
 
@@ -53,9 +53,9 @@ const BreakerItem = ({ breaker, onToggle }: BreakerItemProps) => {
       case 'Double Pole':
         return 'h-10'; // Double height for the handle
       case 'Triple Pole':
-        return 'h-16'; // Triple height for the handle
+        return 'h-15'; // Triple height for the handle
       default:
-        return 'h-5'; // Default height for the handle
+        return 'h-4'; // Default height for the handle
     }
   };
 
